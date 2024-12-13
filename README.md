@@ -35,13 +35,3 @@ Pour exécuter les tests unitaires :
 ```bash
 python -m unittest test_script.py
 ```
-
-## Licence
-[Votre licence ici]
-```
-
----
-
-**Instructions :**
-- Remplacez `<URL-du-dépôt>` par l'URL de votre dépôt Git.
-- Ajoutez une licence si nécessaire à la section "Licence".
