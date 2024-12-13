@@ -1,8 +1,3 @@
-Voici le contenu du fichier `README.md` prêt à être copié et collé :
-
----
-
-```markdown
 # Gestionnaire d'Inventaire
 
 ## Description
