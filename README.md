@@ -1,5 +1,7 @@
 # Gestionnaire d'Inventaire
 
+Le script se trouve aussi dans le wiki
+
 ## Description
 Ce script permet de gérer un inventaire stocké dans des fichiers CSV. Il propose différentes fonctionnalités telles que la recherche de produits, le filtrage par catégorie ou par prix, et la génération de rapports récapitulatifs.
 
