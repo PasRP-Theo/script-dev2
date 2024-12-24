@@ -20,7 +20,7 @@ def load_csv_files(directory):
     if all_data:
         return pd.concat(all_data, ignore_index=True)
     else:
-        print("Aucun fichier CSV trouvé dans le répertoire.")
+        print("Aucun fichier CSV dans le répertoire.")
         return pd.DataFrame()
 
 # Fonction pour rechercher un produit
@@ -54,8 +54,8 @@ def generate_report(data):
     print("\n=== Rapport Récapitulatif ===")
     print(summary)
 
-    export = input("Voulez-vous exporter ce rapport en CSV ? (o/n): ").lower()
-    if export == 'o':
+    export = input("Voulez-vous exporter ce rapport en CSV ? (y/n): ").lower()
+    if export == 'y':
         output_path = input("Entrez le chemin pour enregistrer le fichier (par ex: rapport.csv): ")
         summary.to_csv(output_path)
         print(f"Rapport exporté avec succès vers {output_path}.")
