@@ -3,8 +3,7 @@ import csv
 import pandas as pd
 import unittest
 
-# Fonction pour charger les fichiers CSV
-def load_csv_files(directory):
+def chargement_csv(directory):
     print("Chargement des fichiers CSV...")
     all_data = []
     for filename in os.listdir(directory):
@@ -20,21 +19,18 @@ def load_csv_files(directory):
     if all_data:
         return pd.concat(all_data, ignore_index=True)
     else:
-        print("Aucun fichier CSV dans le répertoire.")
+        print("Aucun fichier CSV trouvé dans le répertoire.")
         return pd.DataFrame()
 
-# Fonction pour rechercher un produit
-def search_product(data, query):
+def chercher_produit(data, query):
     results = data[data['nom du produit'].str.contains(query, case=False, na=False)]
     return results
 
-# Fonction pour filtrer par catégorie
-def filter_by_category(data, category):
+def filtrer_par_cat(data, category):
     results = data[data['catégorie'].str.contains(category, case=False, na=False)]
     return results if not results.empty else None
 
-# Fonction pour rechercher par plage de prix
-def filter_by_price(data, min_price, max_price):
+def filtrer_par_prix(data, min_price, max_price):
     try:
         results = data[(data['prix unitaire'] >= min_price) & (data['prix unitaire'] <= max_price)]
         return results if not results.empty else None
@@ -42,8 +38,7 @@ def filter_by_price(data, min_price, max_price):
         print("Veuillez entrer des valeurs numériques valides pour les prix.")
         return None
 
-# Fonction pour générer un rapport récapitulatif
-def generate_report(data):
+def generer_rapport(data):
     summary = data.groupby('catégorie').agg({
         'quantité': 'sum',
         'prix unitaire': 'mean'
@@ -54,8 +49,8 @@ def generate_report(data):
     print("\n=== Rapport Récapitulatif ===")
     print(summary)
 
-    export = input("Voulez-vous exporter ce rapport en CSV ? (y/n): ").lower()
-    if export == 'y':
+    export = input("Voulez-vous exporter ce rapport en CSV ? (o/n): ").lower()
+    if export == 'o':
         output_path = input("Entrez le chemin pour enregistrer le fichier (par ex: rapport.csv): ")
         summary.to_csv(output_path)
         print(f"Rapport exporté avec succès vers {output_path}.")
@@ -68,7 +63,7 @@ if __name__ == "__main__":
     if not os.path.exists(data_dir):
         print("Le chemin du répertoire est incorrect ou introuvable.")
     else:
-        inventory_data = load_csv_files(data_dir)
+        inventory_data = chargement_csv(data_dir)
 
         if not inventory_data.empty:
             while True:
@@ -82,12 +77,12 @@ if __name__ == "__main__":
                 choice = input("Votre choix: ")
                 if choice == "1":
                     query = input("Entrez le nom du produit ou un mot-clé: ").strip()
-                    results = search_product(inventory_data, query)
+                    results = chercher_produit(inventory_data, query)
                     print(results if not results.empty else "Aucun produit trouvé.")
 
                 elif choice == "2":
                     category = input("Entrez la catégorie: ").strip()
-                    results = filter_by_category(inventory_data, category)
+                    results = filtrer_par_cat(inventory_data, category)
                     if results is not None:
                         print(results)
                     else:
@@ -97,7 +92,7 @@ if __name__ == "__main__":
                     try:
                         min_price = float(input("Entrez le prix minimum: "))
                         max_price = float(input("Entrez le prix maximum: "))
-                        results = filter_by_price(inventory_data, min_price, max_price)
+                        results = filtrer_par_prix(inventory_data, min_price, max_price)
                         if results is not None:
                             print(results)
                         else:
@@ -106,7 +101,7 @@ if __name__ == "__main__":
                         print("Veuillez entrer des valeurs numériques valides pour les prix.")
 
                 elif choice == "4":
-                    generate_report(inventory_data)
+                    generer_rapport(inventory_data)
 
                 elif choice == "5":
                     print("Merci d'avoir utilisé le Gestionnaire d'Inventaire. Au revoir !")
