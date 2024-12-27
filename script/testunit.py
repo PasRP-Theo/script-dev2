@@ -5,7 +5,6 @@ from script import load_csv_files, search_product, filter_by_category, filter_by
 class TestInventoryManager(unittest.TestCase):
 
     def setUp(self):
-        # Setup - création de données fictives pour les tests
         self.data = pd.DataFrame({
             'nom du produit': ['riz', 'pates', 'chocolat'],
             'catégorie': ['alimentaire', 'alimentaire', 'gourmandise'],
@@ -14,8 +13,7 @@ class TestInventoryManager(unittest.TestCase):
         })
 
     def test_load_csv_files(self):
-        # Test for loading CSV files
-        df = load_csv_files('path_to_your_test_data')  # Replace with actual path
+        df = load_csv_files('path_to_your_test_data')
         self.assertFalse(df.empty)
 
     def test_search_product(self):
@@ -27,11 +25,11 @@ class TestInventoryManager(unittest.TestCase):
 
     def test_filter_by_category(self):
         results = filter_by_category(self.data, 'alimentaire')
-        self.assertEqual(len(results), 2)  # Expects 2 matches for 'alimentaire'
+        self.assertEqual(len(results), 2)
 
     def test_filter_by_price(self):
         results = filter_by_price(self.data, min_price=1.0, max_price=2.0)
-        self.assertEqual(len(results), 2)  # Expects 2 products within the given price range
+        self.assertEqual(len(results), 2)
 
     def test_generate_report(self):
         summary = generate_report(self.data)
