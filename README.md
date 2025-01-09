@@ -19,3 +19,8 @@ Installez les dépendances nécessaires :
    ```
 3. Suivez les instructions du menu interactif pour interagir avec le programme.
 
+
+## Utilisation de l'ia
+- Concetpion du script
+- Modularité
+
