@@ -22,5 +22,5 @@ Installez les dépendances nécessaires :
 
 ## Utilisation de l'ia
 - Concetpion du script
-- Modularité
+- Fonctionnalitées smart
 
