@@ -32,7 +32,6 @@ pip install pandas colorama
 
 Voici votre documentation convertie au format Wiki pour un dépôt Git : 
 
-```markdown
 # Gestionnaire d'Inventaire
 
 ## Utilisation
@@ -113,9 +112,7 @@ Un rapport regroupe l'inventaire par catégorie, en affichant les informations s
 - **Nombre de produits**
 - **Prix moyen, minimum et maximum**
 
-```
-
-
+---
 
 ## Utilisation de l'ia
 - Concetpion du script
