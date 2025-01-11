@@ -67,7 +67,7 @@ charger /chemin/vers/repertoire
 
 #### Rechercher un produit par son nom :
 ```bash
-chercher "chaise"
+chercher "pates"
 ```
 
 #### Rechercher par plage de prix :
