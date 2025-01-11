@@ -7,7 +7,6 @@ from pathlib import Path
 
 init(autoreset=True)
 
-
 class ColorLogger:
     @staticmethod
     def error(message: str) -> None:
@@ -20,7 +19,6 @@ class ColorLogger:
     @staticmethod
     def info(message: str) -> None:
         print(Fore.BLUE + str(message) + Style.RESET_ALL)
-
 
 class InventoryManager(Cmd):
     intro = "\nBienvenue dans le Gestionnaire d'Inventaire. Tapez 'aide' ou '?' pour voir les commandes disponibles.\n"
@@ -91,10 +89,10 @@ class InventoryManager(Cmd):
                                'display.width', None):
             self.logger.info("\n" + self.inventory.to_string())
 
-    def do_rechercher(self, term: str) -> None:
+    def do_chercher(self, term: str) -> None:
         """
-        Rechercher un produit par nom.
-        Usage: rechercher <nom_du_produit>
+        Chercher un produit par nom.
+        Usage: chercher <nom_du_produit>
         """
         if not term:
             self.logger.error("Veuillez spécifier un terme de recherche.")
@@ -115,6 +113,95 @@ class InventoryManager(Cmd):
         except Exception as e:
             self.logger.error(f"Erreur lors de la recherche: {str(e)}")
 
+    def do_chercher_prix(self, arg: str) -> None:
+        """
+        Chercher des produits par intervalle de prix.
+        Usage: chercher_prix <prix_min> <prix_max>
+        """
+        if self.inventory.empty:
+            self.logger.error("L'inventaire est vide. Chargez d'abord des données.")
+            return
+
+        try:
+            args = arg.split()
+            if len(args) != 2:
+                self.logger.error("Usage: chercher_prix <prix_min> <prix_max>")
+                return
+
+            prix_min, prix_max = float(args[0]), float(args[1])
+            results = self.inventory[
+                (self.inventory['prix unitaire'] >= prix_min) &
+                (self.inventory['prix unitaire'] <= prix_max)
+            ]
+
+            if results.empty:
+                self.logger.info(f"Aucun produit trouvé entre {prix_min}€ et {prix_max}€.")
+            else:
+                self.logger.info(f"\nProduits entre {prix_min}€ et {prix_max}€:")
+                self.logger.info("\n" + results.to_string())
+
+        except ValueError:
+            self.logger.error("Les prix doivent être des nombres valides.")
+        except Exception as e:
+            self.logger.error(f"Erreur lors de la recherche: {str(e)}")
+
+    def do_chercher_quantite(self, arg: str) -> None:
+        """
+        Chercher des produits par intervalle de quantité.
+        Usage: chercher_quantite <quantite_min> <quantite_max>
+        """
+        if self.inventory.empty:
+            self.logger.error("L'inventaire est vide. Chargez d'abord des données.")
+            return
+
+        try:
+            args = arg.split()
+            if len(args) != 2:
+                self.logger.error("Usage: chercher_quantite <quantite_min> <quantite_max>")
+                return
+
+            qte_min, qte_max = int(args[0]), int(args[1])
+            results = self.inventory[
+                (self.inventory['quantité'] >= qte_min) &
+                (self.inventory['quantité'] <= qte_max)
+            ]
+
+            if results.empty:
+                self.logger.info(f"Aucun produit trouvé avec une quantité entre {qte_min} et {qte_max}.")
+            else:
+                self.logger.info(f"\nProduits avec quantité entre {qte_min} et {qte_max}:")
+                self.logger.info("\n" + results.to_string())
+
+        except ValueError:
+            self.logger.error("Les quantités doivent être des nombres entiers valides.")
+        except Exception as e:
+            self.logger.error(f"Erreur lors de la recherche: {str(e)}")
+
+    def do_chercher_categorie(self, categorie: str) -> None:
+        """
+        Chercher des produits par catégorie.
+        Usage: chercher_categorie <nom_categorie>
+        """
+        if not categorie:
+            self.logger.error("Veuillez spécifier une catégorie.")
+            return
+
+        if self.inventory.empty:
+            self.logger.error("L'inventaire est vide. Chargez d'abord des données.")
+            return
+
+        try:
+            results = self.inventory[
+                self.inventory['catégorie'].str.contains(categorie, case=False, na=False)
+            ]
+            if results.empty:
+                self.logger.info(f"Aucun produit trouvé dans la catégorie '{categorie}'.")
+            else:
+                self.logger.info(f"\nProduits de la catégorie '{categorie}':")
+                self.logger.info("\n" + results.to_string())
+        except Exception as e:
+            self.logger.error(f"Erreur lors de la recherche: {str(e)}")
+
     def do_rapport(self, export_path: Optional[str] = None) -> None:
         """
         Générer un rapport d'inventaire avec option d'export.
@@ -130,7 +217,6 @@ class InventoryManager(Cmd):
                 'prix unitaire': ['mean', 'min', 'max']
             }).round(2)
 
-            # Flatten column names
             report.columns = [f"{col[0]}_{col[1]}" for col in report.columns]
 
             self.logger.info("\n=== Rapport Récapitulatif ===")
@@ -161,7 +247,10 @@ class InventoryManager(Cmd):
         commands = {
             'charger': 'Charger les fichiers CSV du dossier spécifié',
             'afficher': "Afficher l'inventaire complet",
-            'rechercher': 'Rechercher un produit par nom',
+            'chercher': 'Chercher un produit par nom',
+            'chercher_prix': 'Chercher des produits par intervalle de prix',
+            'chercher_quantite': 'Chercher des produits par intervalle de quantité',
+            'chercher_categorie': 'Chercher des produits par catégorie',
             'rapport': "Générer un rapport d'inventaire",
             'quitter': 'Quitter le programme',
             'aide': 'Afficher cette aide'
@@ -169,33 +258,38 @@ class InventoryManager(Cmd):
 
         self.logger.info("\n=== Commandes Disponibles ===")
         for cmd, desc in commands.items():
-            self.logger.info(f"{cmd:12} : {desc}")
-
+            self.logger.info(f"{cmd:20} : {desc}")
 
 def main():
     parser = argparse.ArgumentParser(description="Gestionnaire d'Inventaire CLI")
     parser.add_argument("--charger", help="Charger les fichiers CSV d'un dossier")
-    parser.add_argument("--rechercher", help="Rechercher un produit par nom")
+    parser.add_argument("--chercher", help="Chercher un produit par nom")
+    parser.add_argument("--chercher-prix", nargs=2, type=float, help="Chercher par intervalle de prix (min max)")
+    parser.add_argument("--chercher-quantite", nargs=2, type=int, help="Chercher par intervalle de quantité (min max)")
+    parser.add_argument("--chercher-categorie", help="Chercher par catégorie")
     parser.add_argument("--rapport", help="Générer et sauvegarder un rapport (chemin du fichier)")
     parser.add_argument("--afficher", action="store_true", help="Afficher l'inventaire complet")
 
     args = parser.parse_args()
     manager = InventoryManager()
 
-    # Handle command line arguments
     if any(vars(args).values()):
         if args.charger:
             manager.do_charger(args.charger)
-        if args.rechercher:
-            manager.do_rechercher(args.rechercher)
+        if args.chercher:
+            manager.do_chercher(args.chercher)
+        if args.chercher_prix:
+            manager.do_chercher_prix(f"{args.chercher_prix[0]} {args.chercher_prix[1]}")
+        if args.chercher_quantite:
+            manager.do_chercher_quantite(f"{args.chercher_quantite[0]} {args.chercher_quantite[1]}")
+        if args.chercher_categorie:
+            manager.do_chercher_categorie(args.chercher_categorie)
         if args.rapport:
             manager.do_rapport(args.rapport)
         if args.afficher:
             manager.do_afficher("")
     else:
-        # Start interactive mode if no arguments provided
         manager.cmdloop()
-
 
 if __name__ == "__main__":
     main()
