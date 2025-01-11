@@ -108,7 +108,6 @@ class TestInventoryManager(unittest.TestCase):
         self.assertIn("L'inventaire est vide", mock_stdout.getvalue())
 
     def test_afficher_with_data(self):
-        # Charger des données de test
         self.manager.inventory = self.valid_data
 
         with patch('sys.stdout', new=StringIO()) as mock_stdout:
@@ -118,49 +117,100 @@ class TestInventoryManager(unittest.TestCase):
         self.assertIn("Produit1", output)
         self.assertIn("Produit2", output)
 
-    def test_rechercher_empty_term(self):
+    def test_chercher_empty_term(self):
         with patch('sys.stdout', new=StringIO()) as mock_stdout:
-            self.manager.do_rechercher("")
+            self.manager.do_chercher("")
         self.assertIn("Veuillez spécifier un terme de recherche", mock_stdout.getvalue())
 
-    def test_rechercher_empty_inventory(self):
+    def test_chercher_empty_inventory(self):
         with patch('sys.stdout', new=StringIO()) as mock_stdout:
-            self.manager.do_rechercher("test")
+            self.manager.do_chercher("test")
         self.assertIn("L'inventaire est vide", mock_stdout.getvalue())
 
-    def test_rechercher_exact_match(self):
+    def test_chercher_exact_match(self):
         self.manager.inventory = self.valid_data
 
         with patch('sys.stdout', new=StringIO()) as mock_stdout:
-            self.manager.do_rechercher("Produit1")
+            self.manager.do_chercher("Produit1")
         output = mock_stdout.getvalue()
 
         self.assertIn("Produit1", output)
         self.assertNotIn("Produit2", output)
 
-    def test_rechercher_partial_match(self):
+    def test_chercher_partial_match(self):
         self.manager.inventory = self.valid_data
 
         with patch('sys.stdout', new=StringIO()) as mock_stdout:
-            self.manager.do_rechercher("Produit")
+            self.manager.do_chercher("Produit")
         output = mock_stdout.getvalue()
 
         self.assertIn("Produit1", output)
         self.assertIn("Produit2", output)
 
-    def test_rechercher_no_match(self):
+    def test_chercher_no_match(self):
         self.manager.inventory = self.valid_data
 
         with patch('sys.stdout', new=StringIO()) as mock_stdout:
-            self.manager.do_rechercher("InexistantProduit")
+            self.manager.do_chercher("InexistantProduit")
         self.assertIn("Aucun produit trouvé", mock_stdout.getvalue())
 
-    def test_rechercher_case_insensitive(self):
+    def test_chercher_case_insensitive(self):
         self.manager.inventory = self.valid_data
 
         with patch('sys.stdout', new=StringIO()) as mock_stdout:
-            self.manager.do_rechercher("produit1")
+            self.manager.do_chercher("produit1")
         self.assertIn("Produit1", mock_stdout.getvalue())
+
+    def test_chercher_prix_empty_inventory(self):
+        with patch('sys.stdout', new=StringIO()) as mock_stdout:
+            self.manager.do_chercher_prix("100 200")
+        self.assertIn("L'inventaire est vide", mock_stdout.getvalue())
+
+    def test_chercher_prix_valid_range(self):
+        self.manager.inventory = self.valid_data
+        with patch('sys.stdout', new=StringIO()) as mock_stdout:
+            self.manager.do_chercher_prix("50 150")
+        output = mock_stdout.getvalue()
+        self.assertIn("Produit1", output)
+        self.assertNotIn("Produit2", output)
+
+    def test_chercher_quantite_empty_inventory(self):
+        with patch('sys.stdout', new=StringIO()) as mock_stdout:
+            self.manager.do_chercher_quantite("10 20")
+        self.assertIn("L'inventaire est vide", mock_stdout.getvalue())
+
+    def test_chercher_quantite_valid_range(self):
+        self.manager.inventory = self.valid_data
+        with patch('sys.stdout', new=StringIO()) as mock_stdout:
+            self.manager.do_chercher_quantite("5 15")
+        output = mock_stdout.getvalue()
+        self.assertIn("Produit1", output)
+        self.assertNotIn("Produit2", output)
+
+    # Nouveaux tests pour chercher_categorie
+    def test_chercher_categorie_empty_term(self):
+        with patch('sys.stdout', new=StringIO()) as mock_stdout:
+            self.manager.do_chercher_categorie("")
+        self.assertIn("Veuillez spécifier une catégorie", mock_stdout.getvalue())
+
+    def test_chercher_categorie_empty_inventory(self):
+        with patch('sys.stdout', new=StringIO()) as mock_stdout:
+            self.manager.do_chercher_categorie("Cat1")
+        self.assertIn("L'inventaire est vide", mock_stdout.getvalue())
+
+    def test_chercher_categorie_exact_match(self):
+        self.manager.inventory = self.valid_data
+        with patch('sys.stdout', new=StringIO()) as mock_stdout:
+            self.manager.do_chercher_categorie("Cat1")
+        output = mock_stdout.getvalue()
+        self.assertIn("Produit1", output)
+        self.assertNotIn("Produit2", output)
+
+    def test_chercher_categorie_no_match(self):
+        self.manager.inventory = self.valid_data
+        with patch('sys.stdout', new=StringIO()) as mock_stdout:
+            self.manager.do_chercher_categorie("CatInexistante")
+        self.assertIn("Aucun produit trouvé dans la catégorie", mock_stdout.getvalue())
 
     def test_rapport_empty_inventory(self):
         with patch('sys.stdout', new=StringIO()) as mock_stdout:
@@ -187,8 +237,6 @@ class TestInventoryManager(unittest.TestCase):
             self.manager.do_rapport(str(export_path))
 
         self.assertTrue(export_path.exists())
-
-        # Vérifier le contenu du rapport exporté
         exported_data = pd.read_csv(export_path)
         self.assertGreater(len(exported_data), 0)
 
@@ -217,7 +265,10 @@ class TestInventoryManager(unittest.TestCase):
         self.assertIn("Commandes Disponibles", output)
         self.assertIn("charger", output)
         self.assertIn("afficher", output)
-        self.assertIn("rechercher", output)
+        self.assertIn("chercher", output)
+        self.assertIn("chercher_prix", output)
+        self.assertIn("chercher_quantite", output)
+        self.assertIn("chercher_categorie", output)
         self.assertIn("rapport", output)
         self.assertIn("quitter", output)
 
