@@ -114,7 +114,10 @@ Un rapport regroupe l'inventaire par catégorie, en affichant les informations s
 
 ---
 
+
 ## Utilisation de l'ia
-- Concetpion du script
-- Fonctionnalitées smart
+- Conception du script
+- Fonctionnalitées smart de l'ia
+- Test Unitaires
+- Aides a la conception du script
 
