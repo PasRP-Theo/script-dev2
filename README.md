@@ -116,8 +116,8 @@ Un rapport regroupe l'inventaire par catégorie, en affichant les informations s
 
 
 ## Utilisation de l'ia
-- Conception du script
+- Conception du script de la base du script
 - Fonctionnalitées smart de l'ia
 - Test Unitaires ( prompt: "aides moi a ajouter des test unitaires ou a les améliorer")
-- Aides a la conception du script
+- Aides pour la correction de certains bug qu'a subit le script
 
