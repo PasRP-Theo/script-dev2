@@ -1,12 +1,13 @@
-import pandas as pd
-import argparse
-from cmd import Cmd
-from colorama import Fore, Style, init
-from typing import List, Optional
-from pathlib import Path
+import pandas as pd  # Pour la manipulation des données
+import argparse     # Pour gérer les arguments en ligne de commande
+from cmd import Cmd # Pour créer une interface en ligne de commande
+from colorama import Fore, Style, init  # Pour colorer la sortie console
+from typing import List, Optional       # Pour le typage
+from pathlib import Path               # Pour la gestion des chemins de fichiers
 
 init(autoreset=True)
 
+# mets les messsages d'erreur en couleur
 class ColorLogger:
     @staticmethod
     def error(message: str) -> None:
@@ -26,12 +27,12 @@ class InventoryManager(Cmd):
 
     def __init__(self):
         super().__init__()
-        self.inventory = pd.DataFrame()
+        self.inventory = pd.DataFrame()  # DataFrame vide pour stocker l'inventaire
         self.required_columns = ['nom du produit', 'catégorie', 'quantité', 'prix unitaire']
         self.logger = ColorLogger()
 
     def validate_data(self, data: pd.DataFrame) -> tuple[bool, List[str]]:
-        """Validate the data format and required columns."""
+        """valider les datas avec les bonnes colonnes."""
         missing_columns = [col for col in self.required_columns if col not in data.columns]
         return len(missing_columns) == 0, missing_columns
 
@@ -39,6 +40,9 @@ class InventoryManager(Cmd):
         """
         Charger les fichiers CSV du dossier spécifié.
         Usage: charger <chemin_du_dossier>
+        Parcourt un dossier pour trouver des fichiers CSV
+        Vérifie que chaque fichier a les colonnes requises
+        Concatène tous les fichiers valides dans un seul DataFrame
         """
         directory_path = directory_path.strip()
         if not directory_path:
@@ -93,6 +97,9 @@ class InventoryManager(Cmd):
         """
         Chercher un produit par nom.
         Usage: chercher <nom_du_produit>
+        Utiliser pandas pour filtrer les données
+        Gestion des erreurs avec try/sauf
+        Affichage formaté des résultats
         """
         if not term:
             self.logger.error("Veuillez spécifier un terme de recherche.")
