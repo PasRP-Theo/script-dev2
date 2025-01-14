@@ -19,7 +19,7 @@ Ce script permet de gérer un inventaire stocké dans des fichiers CSV. Il propo
 ## Installation
 
 ### Prérequis
-- Python 3.8 ou supérieur.
+- Python 3.
 - Modules Python requis :
   - `pandas`
   - `argparse`
